@@ -56,4 +56,15 @@ public static void main(String[] args) {
         phishingKeywords.put("premio", 2);
          }
 
+    public static int countOccurrences(String text, String keyword) {
+        int count = 0;
+        int index = 0;
+
+        while ((index = text.indexOf(keyword, index)) != -1) {
+            count++;
+            index += keyword.length();
+        }
+
+        return count;
+    }
 }
