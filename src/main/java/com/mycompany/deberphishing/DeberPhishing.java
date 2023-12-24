@@ -54,7 +54,62 @@ public static void main(String[] args) {
         phishingKeywords.put("urgente", 2);
         phishingKeywords.put("verificación de cuenta", 3);
         phishingKeywords.put("premio", 2);
-         }
+         // Asignar un valor de punto aleatorio (1 al 3) a cada palabra
+     // Asignar un valor de punto aleatorio (1 al 3) a cada palabra
+        Random random = new Random();
+        for (String palabra : palabras) {
+            String palabraMinusculas = palabra.toLowerCase(); // Convertir a minúsculas
+            int valorAleatorio = random.nextInt(3) + 1; // Genera valores aleatorios de 1 a 3
+            phishingKeywords.put(palabraMinusculas, valorAleatorio);
+        }
+
+
+        // Ruta del archivo de texto a analizar
+        System.out.println(System.getProperty("user.dir"));
+        String filePath = "src\\main\\java\\com\\mycompany\\deberphishing\\archivo.txt";
+
+        // Llamada al método para analizar el archivo y calcular los puntos
+        int totalPoints = analyzeFile(filePath, phishingKeywords);
+
+        // Mostrar el total de puntos para todo el mensaje
+        System.out.println("Total de puntos: " + totalPoints);
+    }
+
+    public static int analyzeFile(String filePath, Map<String, Integer> phishingKeywords) {
+        int totalPoints = 0;
+
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            Map<String, Integer> occurrences = new HashMap<>();
+
+            while ((line = br.readLine()) != null) {
+                // Convertir todas las palabras a minúsculas para evitar distinción entre mayúsculas y minúsculas
+                line = line.toLowerCase();
+                
+                // Buscar las ocurrencias de palabras clave y contar los puntos
+                for (String keyword : phishingKeywords.keySet()) {
+                    int keywordPoints = phishingKeywords.get(keyword);
+                    int count = countOccurrences(line, keyword);
+                    
+                    if (count > 0) {
+                        occurrences.put(keyword, count);
+                        totalPoints += count * keywordPoints;
+                    }
+                }
+            }
+
+            // Mostrar las palabras clave encontradas y el número de ocurrencias
+            for (String keyword : occurrences.keySet()) {
+                int count = occurrences.get(keyword);
+                int keywordPoints = phishingKeywords.get(keyword);
+                System.out.println(keyword + " - Ocurrencias: " + count + ", Puntos: " + (count * keywordPoints));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return totalPoints;
+    }
 
     public static int countOccurrences(String text, String keyword) {
         int count = 0;
